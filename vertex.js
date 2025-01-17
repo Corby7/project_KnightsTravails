@@ -1,10 +1,10 @@
-export default class Vertice {
-  constructor(x, y) {
-    this.position = [x, y];
-    this.validMoves = this.findValidMoves();
+export default class Vertex {
+  constructor(boardPosition) {
+    this.position = boardPosition; //value
+    this.validMoves = this.calculateValidMoves(); //adjacents
   }
 
-  findValidMoves() {
+  calculateValidMoves() {
     const validMoves = [];
 
     const movePatterns = [
