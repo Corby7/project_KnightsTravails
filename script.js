@@ -1,12 +1,12 @@
-import Vertice from "./vertice.js";
+import Graph from "./graph.js";
 
-console.log("hoi");
+window.knightMoves = function (start, end) {
+  const graph = new Graph();
+  return graph.knightMoves(start, end);
+};
 
-const leftUnder = new Vertice(0, 0);
-const middle = new Vertice(3, 3);
+const graph = new Graph();
 
-console.log("Leftunder knight valid moves:");
-console.log(leftUnder.validMoves);
+console.log(graph.getVertex([0, 0]));
 
-console.log("Middle knight valid moves:");
-console.log(middle.validMoves);
+console.log(graph.knightMoves([3, 3], [4, 3]));
