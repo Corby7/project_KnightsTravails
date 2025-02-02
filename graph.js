@@ -2,45 +2,69 @@ import Vertex from "./vertex.js";
 
 export default class Graph {
   constructor() {
-    this.adjacencyList = {};
-  }
-
-  addVertex(boardPosition) {
-    if (!this.adjacencyList[boardPosition]) {
-      this.adjacencyList[boardPosition] = new Vertex(boardPosition);
-    }
-  }
-
-  // Add all boardpositions (8 x 8) to adjacency list
-  addAllBoardPositionsAsVertexes() {
-    const boardPositions = [];
-    for (let i = 0; i <= 7; i++) {
-      for (let j = 0; j <= 7; j++) {
-        boardPositions.push([i, j]);
+    // Initialize board (graph) with vertices
+    this.board = Array(8)
+      .fill()
+      .map(() => Array(8).fill(null));
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        this.board[i][j] = new Vertex([i, j]);
       }
     }
+  }
 
-    boardPositions.forEach((boardPosition) => {
-      this.addVertex(boardPosition);
-    });
+  getVertex(position) {
+    const [x, y] = position;
+    return this.board[x][y];
   }
 
   // Use Breadth first search to find shortest route
   findShortestRoute(startingPosition, destinationPosition) {
-    const visited = new Set();
-    const queue = [startingPosition];
-    visited.add(startingPosition);
+    const queue = [[startingPosition]]; // Queue of paths rather than single positions
+    const visited = new Set([JSON.stringify(startingPosition)]);
 
     while (queue.length > 0) {
-      const currentBoardPosition = queue.shift();
+      const currentPath = queue.shift();
+      const currentPosition = currentPath[currentPath.length - 1];
 
-      const currentVertex = this.adjacencyList[currentBoardPosition];
-      currentVertex.validMoves.forEach((boardPosition) => {
-        if (!visited.has(JSON.stringify(boardPosition))) {
-          visited.add(JSON.stringify(boardPosition));
-          queue.push(boardPosition);
+      // Check if we've reached the destination
+      if (
+        JSON.stringify(currentPosition) === JSON.stringify(destinationPosition)
+      ) {
+        return currentPath;
+      }
+
+      // Get valid moves from current position
+      const currentVertex = this.getVertex(currentPosition);
+
+      for (const nextPosition of currentVertex.validMoves) {
+        const nextPosKey = JSON.stringify(nextPosition);
+
+        if (!visited.has(nextPosKey)) {
+          visited.add(nextPosKey);
+          queue.push([...currentPath, nextPosition]);
         }
-      });
+      }
     }
+
+    return null; // No path found
+  }
+
+  // Main interface method
+  knightMoves(start, end) {
+    const path = this.findShortestRoute(start, end);
+
+    if (!path) {
+      return "No valid path found";
+    }
+
+    let output = `=> You made it in ${
+      path.length - 1
+    } moves! Here's your path:`;
+    path.forEach((position) => {
+      output += ` [${position[0]},${position[1]}]`;
+    });
+
+    return output;
   }
 }
